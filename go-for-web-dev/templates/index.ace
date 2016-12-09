@@ -67,8 +67,8 @@ html
     = javascript
       function deleteBook(pk){
         $.ajax({
-          url: "/books/delete?pk=" + pk,
-          method: "GET",
+          url: "/books/" + pk,
+          method: "DELETE",
           success: function(){
             $("#book-row-"+pk).remove();
           }
@@ -102,8 +102,8 @@ html
                       searchResults.append(row);
                       row.on("click", function() {
                           $.ajax({
-                              url: "/books/add?id=" + result.ID,
-                              method: "GET", 
+                              url: "/books?id=" + result.ID,
+                              method: "PUT", 
                               success: function(data){
                                 var book = JSON.parse(data);
                                 if(!book) return;
