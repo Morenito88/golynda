@@ -7,22 +7,63 @@ html
           cursor: pointer;
       }
 
-  body
-    form onsubmit="return false" id="search-form"
-      input name="search"
-      input type="submit" value="Search" onclick="submitSearch()"
+      #page-switcher{
+        width:100%;
+        text-align:center;
+      }
+      #page-switcher button{
+        font-size:24px;
+        font-weight:bold;
+        margin:1em;
+        padding:.3em;
+      }
 
-    table width="100%"
-      thead
-        tr style="text-align:left;"
-          th width="40%" Title
-          th width="30%" Author
-          th width="10%" Year
-          th width="20%" ID
-      tbody id="search-results"
+  body
+    div#page-switcher
+      button onclick="showViewPage()" View Library
+      button onclick="showSearchPage()" Add books
+
+    div#search-page style="display:none;"
+      form onsubmit="return false" id="search-form"
+        input name="search"
+        input type="submit" value="Search" onclick="submitSearch()"
+
+      table width="100%"
+        thead
+          tr style="text-align:left;"
+            th width="40%" Title
+            th width="30%" Author
+            th width="10%" Year
+            th width="20%" ID
+        tbody id="search-results"
+    
+    div#view-page
+      table width="100%"
+        thead
+          tr style="text-align:left;"
+            th width="40%" Title
+            th width="35%" Author
+            th width="20%" Classification
+        tbody#view-results
+          {{range .Books}}
+            tr
+              td {{.Title}}
+              td {{.Author}}
+              td {{.Classification}}
+          {{end}}
 
     script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"
     = javascript
+      function showSearchPage(){
+        $("#view-page").hide();
+        $("#search-page").show();
+      }
+
+      function showViewPage(){
+        $("#search-page").hide();
+        $("#view-page").show();
+      }
+
       function submitSearch() {
           $.ajax({
               url: "/search",
@@ -41,7 +82,13 @@ html
                       row.on("click", function() {
                           $.ajax({
                               url: "/books/add?id=" + result.ID,
-                              method: "GET"
+                              method: "GET", 
+                              success: function(data){
+                                var book = JSON.parse(data);
+                                if(!book) return;
+
+                                $("#view-results").append("<tr><td>" + book.Title + "</td><td>" + book.Author + "</td><td>" + book.Classification + "</td><td>" + result.ID + "</td></tr>")
+                              }
                           })
                       })
                   })
