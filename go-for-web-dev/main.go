@@ -34,13 +34,13 @@ type ClassifySearchResponse struct {
 
 type ClassifyBookResponse struct {
 	BookData struct {
-		Title  string `xml: "title,attr"`
-		Author string `xml: "author,attr"`
-		ID     string `xml: "owi,attr"`
-	} `xml: "work"`
+		Title  string `xml:"title,attr"`
+		Author string `xml:"author,attr"`
+		ID     string `xml:"owi,attr"`
+	} `xml:"work"`
 	Classification struct {
-		MostPopular string `xml: "sfa,attr"`
-	} `xml: "recommendations>ddc>mostPopular"`
+		MostPopular string `xml:"sfa,attr"`
+	} `xml:"recommendations>ddc>mostPopular"`
 }
 
 func main() {
@@ -88,7 +88,7 @@ func main() {
 		if err = db.Ping(); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
-		fmt.Println(book)
+
 		_, err = db.Exec("insert into books (pk, title, author, id, classification) values (?,?,?,?,?)",
 			nil, book.BookData.Title, book.BookData.Author, book.BookData.ID, book.Classification.MostPopular)
 
@@ -102,7 +102,7 @@ func main() {
 
 func find(id string) (ClassifyBookResponse, error) {
 	var c ClassifyBookResponse
-	body, err := classifyAPI("http://classify.oclc.org/classify2/Classify?&summary=true&owi=" + url.QueryEscape(id))
+	body, err := classifyAPI("http://classify.oclc.org/classify2/Classify?summary=true&owi=" + url.QueryEscape(id))
 
 	if err != nil {
 		return ClassifyBookResponse{}, err
